@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Headline {
+public class HeadLine {
     private Long lineId;
     private String lineName;
     private String lineLink;
