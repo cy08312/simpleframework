@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +57,7 @@ public class ClassUtil {
                 absoluteFilePath = absoluteFilePath.replace(File.separator, ".");
                 String className = absoluteFilePath.substring(absoluteFilePath.indexOf(packageName));
                 className = className.substring(0, className.lastIndexOf("."));
-                Class targetClass=loadClass(className);
+                Class targetClass = loadClass(className);
                 emptyClassSet.add(targetClass);
             }
         });
@@ -71,6 +73,17 @@ public class ClassUtil {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
             log.error("load class error:", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T newInstance(Class<?> clazz, boolean accessible) {
+        try {
+            Constructor constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(accessible);
+            return (T) constructor.newInstance();
+        } catch (Exception e) {
+            log.error("newInstance error", e);
             throw new RuntimeException(e);
         }
     }
